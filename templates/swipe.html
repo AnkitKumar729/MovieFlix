@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swipe - MovieFlix</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #e50914;
+            padding: 10px 20px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .swipe-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 60px;
+            box-sizing: border-box;
+        }
+        .card-container {
+            position: relative;
+            width: 300px;
+            height: 450px;
+            margin-bottom: 20px;
+            perspective: 1000px;
+        }
+        .movie-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            cursor: grab;
+            background-color: #242424;
+            overflow: hidden;
+        }
+        .movie-card.swiped-right {
+            animation: swipeRight 0.5s forwards;
+        }
+        .movie-card.swiped-left {
+            animation: swipeLeft 0.5s forwards;
+        }
+        @keyframes swipeRight {
+            to {
+                transform: translateX(150%) rotate(45deg);
+                opacity: 0;
+            }
+        }
+        @keyframes swipeLeft {
+            to {
+                transform: translateX(-150%) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+        .poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            text-align: left;
+        }
+        .info h3 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+            color: #fff;
+        }
+        .info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .swipe-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 200px;
+            margin-top: 20px;
+        }
+        .swipe-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .swipe-btn:hover {
+            transform: scale(1.1);
+        }
+        .dislike-btn {
+            background-color: #ff4757;
+            color: white;
+        }
+        .like-btn {
+            background-color: #2ed573;
+            color: white;
+        }
+        .back-button {
+            background-color: #e50914;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .instruction {
+            position: absolute;
+            top: 70px;
+            width: 100%;
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .swipe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .swipe-overlay.like {
+            background-color: rgba(46, 213, 115, 0.3);
+            color: #2ed573;
+            border: 4px solid #2ed573;
+            border-radius: 10px;
+        }
+        .swipe-overlay.dislike {
+            background-color: rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            border: 4px solid #ff4757;
+            border-radius: 10px;
+        }
+        .status-message {
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            z-index: 1000;
+        }
+        .debug-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #666;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MovieFlix</h1>
+    </div>
+
+    <div class="swipe-container">
+        <div class="card-container">
+            <div class="movie-card" id="currentCard">
+                <div class="swipe-overlay like" id="likeOverlay">LIKE!</div>
+                <div class="swipe-overlay dislike" id="dislikeOverlay">NOPE!</div>
+                <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster" class="poster" id="swipePoster" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+                <div class="info">
+                    <h3>{{ movie.title }}</h3>
+                    <p>({{ movie.year }})</p>
+                    <p>⭐ Rating: {{ movie.rating }}</p>
+                    <p>Genres: {{ movie.genres|join(', ') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="swipe-buttons">
+            <div class="swipe-btn dislike-btn" id="dislikeBtn">✕</div>
+            <div class="swipe-btn like-btn" id="likeBtn">❤</div>
+        </div>
+        <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
+    </div>
+    <div class="status-message" id="statusMessage"></div>
+    <div class="debug-info" id="debugInfo">MovieID: {{ movie.imdb_id }}</div>
+
+    <script>
+        const card = document.getElementById('currentCard');
+        const likeBtn = document.getElementById('likeBtn');
+        const dislikeBtn = document.getElementById('dislikeBtn');
+        const likeOverlay = document.getElementById('likeOverlay');
+        const dislikeOverlay = document.getElementById('dislikeOverlay');
+        const statusMessage = document.getElementById('statusMessage');
+
+        let startX = 0, startY = 0;
+        let moveX = 0, moveY = 0;
+        let isDragging = false;
+        let currentRotation = 0;
+        let initialCardX = 0;
+        const swipeThreshold = 100;
+        const imdbId = '{{ movie.imdb_id }}';
+        let isProcessingSwipe = false;
+
+        // Show status message
+        function showStatus(message, isError = false) {
+            statusMessage.textContent = message;
+            statusMessage.style.display = 'block';
+            statusMessage.style.backgroundColor = isError ? 'rgba(255,0,0,0.7)' : 'rgba(0,0,0,0.7)';
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // Store the initial position of the card
+        const cardRect = card.getBoundingClientRect();
+        initialCardX = cardRect.left;
+
+        // Touch events
+        card.addEventListener('touchstart', handleTouchStart);
+        card.addEventListener('touchmove', handleTouchMove);
+        card.addEventListener('touchend', handleTouchEnd);
+
+        // Mouse events
+        card.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        // Button events
+        likeBtn.addEventListener('click', () => handleSwipe('like'));
+        dislikeBtn.addEventListener('click', () => handleSwipe('dislike'));
+
+        function handleTouchStart(e) {
+            if (isProcessingSwipe) return;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            card.style.transition = 'none';
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging || isProcessingSwipe) return;
+            moveX = e.touches[0].clientX - startX;
+            moveY = e.touches[0].clientY - startY;
+            updateCardPosition();
+        }
+
+        function handleTouchEnd() {
+            if (!isDragging || isProcessingSwipe) return;
+            isDragging = false;
+
+            if (Math.abs(moveX) > swipeThreshold) {
+                if (moveX > 0) {
+                    handleSwipe('like');
+                } else {
+                    handleSwipe('dislike');
+                }
+            } else {
+                resetCardPosition();
+            }
+        }
+
+        function handleMouseDown(e) {
+            if (isProcessingSwipe) return;
+            startX = e.clientX;
+            startY = e.clientY;
+            isDragging = true;
+            card.style.transition = 'none';
+            card.style.cursor = 'grabbing';
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging || isProcessingSwipe) return;
+            moveX = e.clientX - startX;
+            moveY = e.clientY - startY;
+            updateCardPosition();
+        }
+
+        function handleMouseUp() {
+            if (!isDragging || isProcessingSwipe) return;
+            isDragging = false;
+            card.style.cursor = 'grab';
+
+            if (Math.abs(moveX) > swipeThreshold) {
+                if (moveX > 0) {
+                    handleSwipe('like');
+                } else {
+                    handleSwipe('dislike');
+                }
+            } else {
+                resetCardPosition();
+            }
+        }
+
+        function updateCardPosition() {
+            const rotate = moveX * 0.1;
+
+            // Control opacity of the overlays based on drag distance
+            if (moveX > 50) {
+                likeOverlay.style.opacity = Math.min(moveX / 100, 1);
+                dislikeOverlay.style.opacity = 0;
+            } else if (moveX < -50) {
+                dislikeOverlay.style.opacity = Math.min(Math.abs(moveX) / 100, 1);
+                likeOverlay.style.opacity = 0;
+            } else {
+                likeOverlay.style.opacity = 0;
+                dislikeOverlay.style.opacity = 0;
+            }
+
+            card.style.transform = `translateX(${moveX}px) translateY(${moveY}px) rotate(${rotate}deg)`;
+        }
+
+        function resetCardPosition() {
+            card.style.transition = 'transform 0.3s ease';
+            card.style.transform = 'translateX(0) translateY(0) rotate(0deg)';
+            likeOverlay.style.opacity = 0;
+            dislikeOverlay.style.opacity = 0;
+        }
+
+        function handleSwipe(action) {
+            card.style.transition = 'transform 0.5s ease';
+
+            if (action === 'like') {
+                card.classList.add('swiped-right');
+                likeOverlay.style.opacity = 1;
+            } else {
+                card.classList.add('swiped-left');
+                dislikeOverlay.style.opacity = 1;
+            }
+
+            setTimeout(() => {
+                // Send the action to the server
+                fetch('/swipe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `imdb_id=${encodeURIComponent(imdbId)}&action=${action}`
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`${action} registered, loading new movie`);
+                        window.location.href = '/swipe';
+                    } else {
+                        console.error('Server error:', response.status);
+                        window.location.href = '/swipe';  // Redirect anyway to try again
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    window.location.href = '/swipe';  // Redirect anyway to try again
+                });
+            }, 500);  // Wait for the animation to complete
+        }
+    </script>
+</body>
+</html>
