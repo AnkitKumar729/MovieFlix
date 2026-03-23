@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.Title }} - MovieFlix</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+        .header {
+            background-color: #e50914;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .main-content {
+            margin-top: 70px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .movie-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .poster-container {
+            flex: 0 0 300px;
+        }
+        .poster {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .info-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .movie-title {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            color: #fff;
+        }
+        .movie-meta {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .rating {
+            display: inline-block;
+            background-color: #e50914;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .movie-plot {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .movie-info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 20px;
+            margin-bottom: 30px;
+        }
+        .movie-info-label {
+            font-weight: bold;
+            color: #e50914;
+        }
+        .streaming-providers {
+            margin-top: 30px;
+        }
+        .streaming-title {
+            font-size: 22px;
+            color: #e50914;
+            margin-bottom: 10px;
+            border-left: 4px solid #e50914;
+            padding-left: 10px;
+        }
+        .streaming-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .streaming-badge {
+            background-color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #e50914;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #f40612;
+        }
+        .similar-movies {
+            margin-top: 40px;
+        }
+        .similar-title {
+            font-size: 24px;
+            color: #e50914;
+            margin-bottom: 20px;
+            border-left: 4px solid #e50914;
+            padding-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .movie-details {
+                flex-direction: column;
+            }
+            .poster-container {
+                flex: 0 0 auto;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+            .movie-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MovieFlix</h1>
+    </div>
+    
+    <div class="main-content">
+        <a href="{{ url_for('home') }}" class="back-button">← Back to Recommendations</a>
+        
+        <div class="movie-details">
+            <div class="poster-container">
+                <img src="{{ movie.Poster }}" alt="{{ movie.Title }} Poster" class="poster" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+            </div>
+            
+            <div class="info-container">
+                <h1 class="movie-title">{{ movie.Title }}</h1>
+                
+                <div class="movie-meta">
+                    {% if movie.imdbRating and movie.imdbRating != "N/A" %}
+                    <span class="rating">⭐ {{ movie.imdbRating }}/10</span>
+                    {% endif %}
+                    <span>{{ movie.Year }}</span> • 
+                    <span>{{ movie.Runtime }}</span> • 
+                    <span>{{ movie.Rated }}</span>
+                </div>
+                
+                {% if movie.Plot and movie.Plot != "N/A" %}
+                <div class="movie-plot">
+                    {{ movie.Plot }}
+                </div>
+                {% endif %}
+                
+                <div class="movie-info-grid">
+                    {% if movie.Genre and movie.Genre != "N/A" %}
+                    <div class="movie-info-label">Genre:</div>
+                    <div>{{ movie.Genre }}</div>
+                    {% endif %}
+                    
+                    {% if movie.Director and movie.Director != "N/A" %}
+                    <div class="movie-info-label">Director:</div>
+                    <div>{{ movie.Director }}</div>
+                    {% endif %}
+                    
+                    {% if movie.Actors and movie.Actors != "N/A" %}
+                    <div class="movie-info-label">Actors:</div>
+                    <div>{{ movie.Actors }}</div>
+                    {% endif %}
+                    
+                    {% if movie.Writer and movie.Writer != "N/A" %}
+                    <div class="movie-info-label">Writer:</div>
+                    <div>{{ movie.Writer }}</div>
+                    {% endif %}
+                    
+                    {% if movie.Language and movie.Language != "N/A" %}
+                    <div class="movie-info-label">Language:</div>
+                    <div>{{ movie.Language }}</div>
+                    {% endif %}
+                    
+                    {% if movie.Awards and movie.Awards != "N/A" %}
+                    <div class="movie-info-label">Awards:</div>
+                    <div>{{ movie.Awards }}</div>
+                    {% endif %}
+                </div>
+                
+                {% if streaming and streaming|length > 0 %}
+                <div class="streaming-providers">
+                    <h3 class="streaming-title">Where to Watch</h3>
+                    <div class="streaming-list">
+                        {% for provider in streaming %}
+                        <div class="streaming-badge">{{ provider }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,241 @@
+:root {
+    --netflix-red: #E50914;
+    --dark-bg: #141414;
+    --dark-card: #242424;
+    --text-white: #FFFFFF;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-white);
+    font-family: Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--dark-bg);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--netflix-red);
+}
+
+form {
+    display: flex;
+    align-items: center; /* Ensure vertical alignment */
+}
+
+/* Updated search input styles */
+.search-input {
+    width: 250px; /* Smaller width (originally 400px) */
+    height: 35px; /* Smaller height (originally matched button at 45px) */
+    padding: 8px;
+    font-size: 14px; /* Slightly smaller font */
+    border: 1px solid var(--netflix-red);
+    background-color: rgba(36, 36, 36, 0.7); /* Translucent dark-card color */
+    color: var(--text-white);
+    margin-right: 10px; /* Space between input and button */
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Lighter placeholder text */
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: var(--netflix-red);
+    color: var(--text-white);
+    border: none;
+    cursor: pointer;
+    height: 45px; /* Button height unchanged */
+}
+
+button:hover {
+    background-color: #B2070E;
+}
+
+main {
+    padding: 20px;
+}
+
+.genre-section {
+    margin: 20px 0;
+}
+
+.genre-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.movie-list {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.movie-card {
+    background-color: var(--dark-card);
+    border-radius: 10px;
+    width: 200px;
+    margin-right: 20px;
+    padding: 10px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.movie-card h3 {
+    font-size: 14px;
+    margin: 10px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card p {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.movie-card a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: var(--netflix-red);
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.movie-card a:hover {
+    background-color: #B2070E;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.movie-details {
+    padding: 20px;
+}
+
+.movie-details h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.movie-details img {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.movie-details p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.movie-details p strong {
+    color: var(--netflix-red);
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: var(--netflix-red);
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background-color: #B2070E;
+}
+/* Add these to the end of style.css */
+
+.swipe-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.swipe-card {
+    background-color: var(--dark-card);
+    border-radius: 10px;
+    width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.swipe-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.swipe-button.dislike {
+    background-color: #FF4444;
+    color: var(--text-white);
+}
+
+.swipe-button.like {
+    background-color: #44FF44;
+    color: var(--text-white);
+}
+
+.done-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--netflix-red);
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.done-button:hover {
+    background-color: #B2070E;
+}
+
+.swipe-link {
+    color: var(--netflix-red);
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.swipe-link:hover {
+    text-decoration: underline;
+}
+
+.feedback-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.feedback-button:hover {
+    opacity: 0.7;
+}
